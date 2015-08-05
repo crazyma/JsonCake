@@ -2,6 +2,8 @@ package com.crazyma.jsoncakelib;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import com.squareup.okhttp.OkHttpClient;
@@ -19,11 +21,13 @@ public class JsonCake {
 		private OnWrapFormBody onWrapFormBody;
 		private RequestBody formBody;
 		private Type objectType;
+		private ExecutorService pool;
 		
 		public Builder(){
 			connectionTimeout = 10;
 			readTimeout = 10;
 			writeTimeout = 10;
+			pool = Executors.newFixedThreadPool(5);
 		}
 		
 		public Builder setUrl(String url) {
@@ -62,6 +66,10 @@ public class JsonCake {
 			this.onWrapFormBody = onWrapFormBody;
 			return this;
 		}
+		public Builder setExecutorService(ExecutorService pool){
+			this.pool = pool;
+			return this;
+		}
 		public String getUrl() {
 			return url;
 		}
@@ -96,19 +104,29 @@ public class JsonCake {
 			new JsonCake(this).get();
 		}
 	}
-	
+
+	static private ExecutorService pool;
 	private Builder builder;
 	
 	public JsonCake(Builder builder){
 		this.builder = builder;
+		pool = Executors.newFixedThreadPool(5);
 	}
 	
 	public void post(){
-		new PostTask(builder).execute();
+		if(builder.pool == null){
+			new PostTask(builder).executeOnExecutor(pool);
+		}else{
+			new PostTask(builder).executeOnExecutor(builder.pool);
+		}
 	}
 	
 	public void get(){
-		new GetTask(builder).execute();
+		if(builder.pool == null){
+			new GetTask(builder).executeOnExecutor(pool);
+		}else{
+			new GetTask(builder).executeOnExecutor(builder.pool);
+		}
 	}
 		
 	private class GetTask extends NetworkingTask {
