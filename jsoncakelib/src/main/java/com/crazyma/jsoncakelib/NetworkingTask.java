@@ -19,6 +19,7 @@ public abstract class NetworkingTask extends AsyncTask<Void, Void, Object> {
 	protected Exception exception = null;
 	protected String errorMessage = null;
 	protected int connectionTimeout,readTimeout,writeTimeout;
+	protected int delay;
 	protected OnFinishListener onFinishListener;
 	protected OnTaskFailListener onTaskFailListener;
 	protected RequestBody formBody;
@@ -38,6 +39,7 @@ public abstract class NetworkingTask extends AsyncTask<Void, Void, Object> {
 		objectType = builder.getObjectType();
 		onWrapFormBody = builder.getOnWrapFormBody();
 		showingJson = builder.isShowingJson();
+		delay = builder.getDelay();
 	}
 	
 	protected abstract String onNetworking() throws IOException;
@@ -63,12 +65,18 @@ public abstract class NetworkingTask extends AsyncTask<Void, Void, Object> {
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				errorMessage = "There is a Error through the http connection, please check the exception in second parament of OnTaskFailListener";
+				errorMessage = "There is a Error through the http connection, please check the exception in second parameter of OnTaskFailListener";
 				result = null;
 				exception = e;
 			}			
 			
 			if(responseStr != null){
+				try {
+					Thread.sleep(delay * 1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+
 				if(showingJson){
 					Log.d(tag,"[url : " + url + "]\n" + responseStr);
 				}
@@ -82,7 +90,7 @@ public abstract class NetworkingTask extends AsyncTask<Void, Void, Object> {
 							result = gson.fromJson(responseStr, objectType);
 						} catch (Exception e){
 							// TODO Auto-generated catch block
-							errorMessage = "There is an Error, please check the exception in second parament of OnTaskFailListener";
+							errorMessage = "There is an Error, please check the exception in second parameter of OnTaskFailListener";
 							exception = e;
 							result = null;
 							e.printStackTrace();
@@ -96,7 +104,7 @@ public abstract class NetworkingTask extends AsyncTask<Void, Void, Object> {
 						result = jsonObject;
 					} catch (JSONException e) {
 						// TODO Auto-generated catch block
-						errorMessage = "There is a JsonObject Error, please check the exception in second parament of OnTaskFailListener";
+						errorMessage = "There is a JsonObject Error, please check the exception in second parameter of OnTaskFailListener";
 						exception = e;
 						result = null;
 						e.printStackTrace();
@@ -109,7 +117,7 @@ public abstract class NetworkingTask extends AsyncTask<Void, Void, Object> {
 						result = jsonArray; 
 					} catch (JSONException e) {
 						// TODO Auto-generated catch block
-						errorMessage = "There is a JsonArray Error, please check the exception in second parament of OnTaskFailListener";
+						errorMessage = "There is a JsonArray Error, please check the exception in second parameter of OnTaskFailListener";
 						exception = e;
 						result = null;
 						e.printStackTrace();

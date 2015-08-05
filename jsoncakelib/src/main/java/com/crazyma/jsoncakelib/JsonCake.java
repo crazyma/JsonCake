@@ -15,7 +15,8 @@ public class JsonCake {
 	
 	public static class Builder{
 		private String url;
-		private int connectionTimeout,readTimeout,writeTimeout;	
+		private int connectionTimeout,readTimeout,writeTimeout;
+		private int delay;
 		private OnFinishListener onFinishListener;
 		private OnTaskFailListener onTaskFailListener;
 		private OnWrapFormBody onWrapFormBody;
@@ -75,6 +76,10 @@ public class JsonCake {
 			this.showingJson = showingJson;
 			return this;
 		}
+		public Builder setDelay(int delay){
+			this.delay = delay;
+			return this;
+		}
 		public String getUrl() {
 			return url;
 		}
@@ -101,6 +106,9 @@ public class JsonCake {
 		}
 		public OnWrapFormBody getOnWrapFormBody(){
 			return onWrapFormBody;
+		}
+		public int getDelay(){
+			return delay;
 		}
 		public boolean isShowingJson(){
 			return showingJson;
