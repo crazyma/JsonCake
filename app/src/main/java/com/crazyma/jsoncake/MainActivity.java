@@ -2,8 +2,13 @@ package com.crazyma.jsoncake;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.crazyma.jsoncakelib.JsonCake;
+import com.crazyma.jsoncakelib.OnFinishListener;
+import com.crazyma.jsoncakelib.OnFinishLoadStringListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,5 +38,29 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //http://25lol.com/veeda/api/bank_channel.php
+        new JsonCake.Builder()
+                    .setUrl("http://25lol.com/veeda/api/bank_channel.php")
+                    .setOnFinishListener(new OnFinishLoadStringListener() {
+                        @Override
+                        public void onFinish(String responseStr) {
+                            Log.d("TAG", "response : " + responseStr);
+                        }
+                    })
+                    .get();
+        new JsonCake.Builder()
+                .setUrl("http://25lol.com/veeda/api/bank_channel.php")
+                .setOnFinishListener(new OnFinishLoadStringListener() {
+                    @Override
+                    public void onFinish(String responseStr) {
+                        Log.d("TAG", "response : " + responseStr);
+                    }
+                })
+                .get();
     }
 }
