@@ -25,6 +25,7 @@ public abstract class NetworkingTask extends AsyncTask<Void, Void, Object> {
 	protected OnWrapFormBody onWrapFormBody;
 	protected String url;
 	protected Type objectType;
+	protected boolean showingJson;
 	
 	public NetworkingTask(JsonCake.Builder builder){
 		url = builder.getUrl();
@@ -36,6 +37,7 @@ public abstract class NetworkingTask extends AsyncTask<Void, Void, Object> {
 		formBody = builder.getFormBody();
 		objectType = builder.getObjectType();
 		onWrapFormBody = builder.getOnWrapFormBody();
+		showingJson = builder.isShowingJson();
 	}
 	
 	protected abstract String onNetworking() throws IOException;
@@ -67,6 +69,9 @@ public abstract class NetworkingTask extends AsyncTask<Void, Void, Object> {
 			}			
 			
 			if(responseStr != null){
+				if(showingJson){
+					Log.d(tag,"[url : " + url + "]\n" + responseStr);
+				}
 				if(onFinishListener instanceof OnFinishLoadObjectListener){
 					if(objectType == null){
 						errorMessage = "You have no object type for json parsing in Gson";

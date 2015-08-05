@@ -6,9 +6,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.crazyma.jsoncakelib.JsonCake;
-import com.crazyma.jsoncakelib.OnFinishListener;
-import com.crazyma.jsoncakelib.OnFinishLoadStringListener;
+import com.crazyma.jsoncakelib.*;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
                     .setOnFinishListener(new OnFinishLoadStringListener() {
                         @Override
                         public void onFinish(String responseStr) {
-                            Log.d("TAG", "response : " + responseStr);
                         }
                     })
                     .get();

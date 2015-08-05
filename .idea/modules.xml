@@ -3,7 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/JsonCake.iml" filepath="$PROJECT_DIR$/JsonCake.iml" />
+      <module fileurl="file://$PROJECT_DIR$/JsonCake.iml" filepath="$PROJECT_DIR$/JsonCake.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jsoncakelib/jsoncakelib.iml" filepath="$PROJECT_DIR$/jsoncakelib/jsoncakelib.iml" />
       <module fileurl="file://$PROJECT_DIR$/jsoncakelib/jsoncakelib.iml" filepath="$PROJECT_DIR$/jsoncakelib/jsoncakelib.iml" />
     </modules>
   </component>

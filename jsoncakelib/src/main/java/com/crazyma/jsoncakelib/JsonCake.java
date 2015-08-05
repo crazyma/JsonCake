@@ -22,6 +22,7 @@ public class JsonCake {
 		private RequestBody formBody;
 		private Type objectType;
 		private ExecutorService pool;
+		private boolean showingJson;
 		
 		public Builder(){
 			connectionTimeout = 10;
@@ -70,6 +71,10 @@ public class JsonCake {
 			this.pool = pool;
 			return this;
 		}
+		public Builder setShowingJson(boolean showingJson){
+			this.showingJson = showingJson;
+			return this;
+		}
 		public String getUrl() {
 			return url;
 		}
@@ -96,6 +101,9 @@ public class JsonCake {
 		}
 		public OnWrapFormBody getOnWrapFormBody(){
 			return onWrapFormBody;
+		}
+		public boolean isShowingJson(){
+			return showingJson;
 		}
 		public void post(){
 			new JsonCake(this).post();
