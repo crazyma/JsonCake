@@ -1,5 +1,29 @@
 apply plugin: 'com.android.library'
 
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'jsoncake'
+
+    publishedGroupId = 'com.crazyma.jsoncakelib'
+    libraryName = 'JsonCake'
+    artifact = 'jsoncake'
+
+    libraryDescription = 'A wrapper Library using okhttp and gson to make doing http operation much easier.'
+
+    siteUrl = 'https://github.com/crazyma/JsonCake'
+    gitUrl = 'https://github.com/crazyma/JsonCake.git'
+
+    libraryVersion = '1.0.0'
+
+    developerId = 'crazyma'
+    developerName = 'David Ma'
+    developerEmail = 'david77115@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
 android {
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
@@ -8,7 +32,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 22
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
     }
     buildTypes {
         release {
@@ -24,3 +48,6 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.google.code.gson:gson:2.3.1'
 }
+
+apply from: 'https://raw.githubusercontent.com/attwellBrian/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/attwellBrian/JCenter/master/bintrayv1.gradle'
