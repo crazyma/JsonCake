@@ -12,7 +12,7 @@ import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
 public class JsonCake {
-	
+
 	public static class Builder{
 		private String url;
 		private int connectionTimeout,readTimeout,writeTimeout;
@@ -24,42 +24,42 @@ public class JsonCake {
 		private Type objectType;
 		private ExecutorService pool;
 		private boolean showingJson;
-		
+
 		public Builder(){
 			connectionTimeout = 10;
 			readTimeout = 10;
 			writeTimeout = 10;
 			pool = Executors.newFixedThreadPool(5);
 		}
-		
+
 		public Builder setUrl(String url) {
 			this.url = url;
 			return this;
-		}		
+		}
 		public Builder setConnectionTimeout(int connectionTimeout) {
 			this.connectionTimeout = connectionTimeout;
 			return this;
-		}		
+		}
 		public Builder setReadTimeout(int readTimeout) {
 			this.readTimeout = readTimeout;
 			return this;
-		}		
+		}
 		public Builder setWriteTimeout(int writeTimeout) {
 			this.writeTimeout = writeTimeout;
 			return this;
-		}		
+		}
 		public Builder setOnFinishListener(OnFinishListener onFinishListener) {
 			this.onFinishListener = onFinishListener;
 			return this;
-		}		
+		}
 		public Builder setOnTaskFailListener(OnTaskFailListener onTaskFailListener) {
 			this.onTaskFailListener = onTaskFailListener;
 			return this;
-		}		
+		}
 		public Builder setFormBody(RequestBody formBody) {
 			this.formBody = formBody;
 			return this;
-		}				
+		}
 		public Builder setObjectType(Type objectType){
 			this.objectType = objectType;
 			return this;
@@ -113,38 +113,51 @@ public class JsonCake {
 		public boolean isShowingJson(){
 			return showingJson;
 		}
-		public void post(){
-			new JsonCake(this).post();
+		public JsonCake post(){
+			return new JsonCake(this).post();
 		}
-		public void get(){
-			new JsonCake(this).get();
+		public JsonCake get(){
+			return new JsonCake(this).get();
 		}
 	}
 
 	static private ExecutorService pool;
 	private Builder builder;
-	
+	private NetworkingTask task;
+
 	public JsonCake(Builder builder){
 		this.builder = builder;
 		pool = Executors.newFixedThreadPool(5);
 	}
-	
-	public void post(){
+
+	public JsonCake post(){
 		if(builder.pool == null){
-			new PostTask(builder).executeOnExecutor(pool);
+			task = new PostTask(builder);
+			task.executeOnExecutor(pool);
 		}else{
-			new PostTask(builder).executeOnExecutor(builder.pool);
+			task = new PostTask(builder);
+			task.executeOnExecutor(builder.pool);
+		}
+		return this;
+	}
+
+	public JsonCake get(){
+		if(builder.pool == null){
+			task = new GetTask(builder);
+			task.executeOnExecutor(pool);
+		}else{
+			task = new GetTask(builder);
+			task.executeOnExecutor(builder.pool);
+		}
+		return this;
+	}
+
+	public void cancel(){
+		if(task != null && task.isCancelled() == false){
+			task.cancel(true);
 		}
 	}
-	
-	public void get(){
-		if(builder.pool == null){
-			new GetTask(builder).executeOnExecutor(pool);
-		}else{
-			new GetTask(builder).executeOnExecutor(builder.pool);
-		}
-	}
-		
+
 	private class GetTask extends NetworkingTask {
 
 		public GetTask(Builder builder) {
@@ -162,12 +175,12 @@ public class JsonCake {
 				client.setReadTimeout(readTimeout, TimeUnit.SECONDS);
 			if(writeTimeout > 0)
 				client.setWriteTimeout(writeTimeout, TimeUnit.SECONDS);
-			
-			
+
+
 			Request request = new Request.Builder()
-											.url(url)
-											.build();
-			
+					.url(url)
+					.build();
+
 			Response response = client.newCall(request).execute();
 			if(response.isSuccessful()){
 				return response.body().string();
@@ -177,9 +190,9 @@ public class JsonCake {
 				return null;
 			}
 		}
-		
+
 	}
-	
+
 	private class PostTask extends NetworkingTask{
 
 		public PostTask(Builder builder) {
@@ -197,15 +210,15 @@ public class JsonCake {
 				client.setReadTimeout(readTimeout, TimeUnit.SECONDS);
 			if(writeTimeout > 0)
 				client.setWriteTimeout(writeTimeout, TimeUnit.SECONDS);
-			
+
 			if(onWrapFormBody != null){
 				formBody = onWrapFormBody.wrapForm();
 			}
-			
+
 			Request request = new Request.Builder()
-									        .url(url)
-									        .post(formBody)
-									        .build();
+					.url(url)
+					.post(formBody)
+					.build();
 			Response response = client.newCall(request).execute();
 			if(response.isSuccessful()){
 				return response.body().string();
@@ -215,7 +228,7 @@ public class JsonCake {
 				return null;
 			}
 		}
-		
+
 	}
-	
+
 }
