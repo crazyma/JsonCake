@@ -27,7 +27,7 @@ public abstract class NetworkingTask extends AsyncTask<Void, Void, Object> {
 	protected String url;
 	protected Type objectType;
 	protected boolean showingJson;
-	
+
 	public NetworkingTask(JsonCake.Builder builder){
 		url = builder.getUrl();
 		connectionTimeout = builder.getConnectionTimeout();
@@ -41,25 +41,25 @@ public abstract class NetworkingTask extends AsyncTask<Void, Void, Object> {
 		showingJson = builder.isShowingJson();
 		delay = builder.getDelay();
 	}
-	
+
 	protected abstract String onNetworking() throws IOException;
-	
+
 	@Override
 	protected Object doInBackground(Void... params) {
 		// TODO Auto-generated method stub
-		Object result = null;			
+		Object result = null;
 		String responseStr = null;
-		
+
 		if(url == null){
 			errorMessage = "You have no url address";
 			throw new NullPointerException(errorMessage);
-			
+
 		}else if(onFinishListener == null){
 			errorMessage = "You have no OnFinishListener";
 			throw new NullPointerException(errorMessage);
-			
+
 		}else{	//	url != null && onFinishListener != null
-		
+
 			try {
 				responseStr = onNetworking();
 			} catch (Exception e) {
@@ -68,8 +68,8 @@ public abstract class NetworkingTask extends AsyncTask<Void, Void, Object> {
 				errorMessage = "There is a Error through the http connection, please check the exception in second parameter of OnTaskFailListener";
 				result = null;
 				exception = e;
-			}			
-			
+			}
+
 			if(responseStr != null){
 				try {
 					Thread.sleep(delay * 1000);
@@ -96,9 +96,9 @@ public abstract class NetworkingTask extends AsyncTask<Void, Void, Object> {
 							e.printStackTrace();
 						}
 					}
-					
+
 				}else if(onFinishListener instanceof OnFinishLoadJsonObjectListener){
-					
+
 					try {
 						JSONObject jsonObject = new JSONObject(responseStr);
 						result = jsonObject;
@@ -109,12 +109,12 @@ public abstract class NetworkingTask extends AsyncTask<Void, Void, Object> {
 						result = null;
 						e.printStackTrace();
 					}
-					
+
 				}else if(onFinishListener instanceof OnFinishLoadJsonArrayListener){
-					
+
 					try {
 						JSONArray jsonArray = new JSONArray(responseStr);
-						result = jsonArray; 
+						result = jsonArray;
 					} catch (JSONException e) {
 						// TODO Auto-generated catch block
 						errorMessage = "There is a JsonArray Error, please check the exception in second parameter of OnTaskFailListener";
@@ -122,22 +122,28 @@ public abstract class NetworkingTask extends AsyncTask<Void, Void, Object> {
 						result = null;
 						e.printStackTrace();
 					}
-					
+
 				}else if(onFinishListener instanceof OnFinishLoadStringListener){
 					result = responseStr;
 				}
-			}			
+			}
 		}
-		
+
 		return result;
+	}
+
+	@Override
+	protected void onCancelled() {
+		super.onCancelled();
+		Log.w(tag,"JsonCake is cancelled");
 	}
 
 	@Override
 	protected void onPostExecute(Object result) {
 		// TODO Auto-generated method stub
 		super.onPostExecute(result);
-		
-		if(result != null){			
+
+		if(result != null){
 			if(onFinishListener instanceof OnFinishLoadObjectListener){
 				((OnFinishLoadObjectListener)onFinishListener).onFinish(result);
 			}else if(onFinishListener instanceof OnFinishLoadJsonObjectListener){
@@ -147,19 +153,19 @@ public abstract class NetworkingTask extends AsyncTask<Void, Void, Object> {
 			}else if(onFinishListener instanceof OnFinishLoadStringListener){
 				((OnFinishLoadStringListener)onFinishListener).onFinish((String)result);
 			}
-			return;				
+			return;
 		}
-			
+
 		if(errorMessage != null)
 			Log.e(tag,errorMessage);
-		
+
 		if(exception != null){
 			Log.e(tag,exception.toString());
 		}
-		
-		if(onTaskFailListener != null){	
+
+		if(onTaskFailListener != null){
 			onTaskFailListener.onFail(errorMessage, exception);
 		}
 	}
-	
+
 }
