@@ -147,7 +147,7 @@ repositories {
 
 dependencies {
 	...
-    compile 'com.crazyma.jsoncakelib:jsoncake:1.0.1'
+    compile 'com.crazyma.jsoncakelib:jsoncake:1.0.2'
 }
 ```
 Used dependencies
