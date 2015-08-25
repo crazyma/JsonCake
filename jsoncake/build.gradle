@@ -13,7 +13,7 @@ ext {
     siteUrl = 'https://github.com/crazyma/JsonCake'
     gitUrl = 'https://github.com/crazyma/JsonCake.git'
 
-    libraryVersion = '1.0.0'
+    libraryVersion = '1.0.1'
 
     developerId = 'crazyma'
     developerName = 'David Ma'
@@ -32,7 +32,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 22
         versionCode 1
-        versionName "1.0.0"
+        versionName "1.0.1"
     }
     buildTypes {
         release {
