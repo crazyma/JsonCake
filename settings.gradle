@@ -1,1 +1,1 @@
-include ':app', ':jsoncakelib'
+include ':app', ':jsoncake'
