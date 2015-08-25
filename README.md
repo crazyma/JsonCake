@@ -154,7 +154,6 @@ Used dependencies
 ---
 此Library所使用的dependencies：
 ```xml
-compile 'com.android.support:appcompat-v7:22.2.1'
 compile 'com.squareup.okhttp:okhttp:2.4.0'
 compile 'com.google.code.gson:gson:2.3.1'
 ```
