@@ -26,9 +26,9 @@ public class JsonCake {
 		private boolean showingJson;
 
 		public Builder(){
-			connectionTimeout = 10;
-			readTimeout = 10;
-			writeTimeout = 10;
+			connectionTimeout = 20;
+			readTimeout = 20;
+			writeTimeout = 20;
 			pool = Executors.newFixedThreadPool(5);
 		}
 
