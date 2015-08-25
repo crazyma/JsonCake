@@ -6,6 +6,7 @@ Welcome to JsonCake
 
 本Library使用了 [OKHttp][2] 以及 [Gson][1] 協助處理相關的操作。
 
+
 Variables
 ---
 **Required**
@@ -132,6 +133,31 @@ new JsonCake.Builder()
 ```
 >**Note:**
 >RequestBody 是 OkHttp所定義的Class，可以依序將Form的資料依序填入。詳情請參考[官網][2]。
+
+Download
+---
+```xml
+repositories {
+    maven {
+        url  "http://dl.bintray.com/badu/maven"
+    }
+}
+
+...
+
+dependencies {
+	...
+    compile 'com.crazyma.jsoncakelib:jsoncake:1.0.1'
+}
+```
+Used dependencies
+---
+此Library所使用的dependencies：
+```xml
+compile 'com.android.support:appcompat-v7:22.2.1'
+compile 'com.squareup.okhttp:okhttp:2.4.0'
+compile 'com.google.code.gson:gson:2.3.1'
+```
 
 Required Android Permission
 --------
