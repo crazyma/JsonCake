@@ -23,28 +23,27 @@ public class RequestBuilder {
 
     public RequestBuilder(String url){
         this.url = url;
-        connectionTimeout = 20;
-        readTimeout = 20;
-        writeTimeout = 20;
+
+        CakeConfig cakeConfig = CakeConfig.getInstance();
+        connectionTimeout = cakeConfig.getConnectionTimeout();
+        readTimeout = cakeConfig.getReadTimeout();
+        writeTimeout = cakeConfig.getWriteTimeout();
+        delay = cakeConfig.getDelay();
+        pool = cakeConfig.getPool();
+        showingJson = cakeConfig.isShowingJson();
     }
 
     public GetTask2 get(){
-        GetTask2 getTask2 = new GetTask2(this);;
-        if(pool == null){
-            getTask2.executeOnExecutor(JsonCake2.getDefaultPool());
-        }else{
-            getTask2.executeOnExecutor(pool);
-        }
+        GetTask2 getTask2 = new GetTask2(this);
+        getTask2.executeOnExecutor(pool);
+
         return getTask2;
     }
 
     public PostTask post(){
         PostTask postTask = new PostTask(this);;
-        if(pool == null){
-            postTask.executeOnExecutor(JsonCake2.getDefaultPool());
-        }else{
-            postTask.executeOnExecutor(pool);
-        }
+        postTask.executeOnExecutor(pool);
+
         return postTask;
     }
 
