@@ -10,9 +10,9 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by david on 2015/9/4.
  */
-public class GetTask2 extends NetworkingTask2 {
+public class GetTask extends NetworkingTask {
 
-    public GetTask2(JsonCake2.RequestBuilder requestBuilder) {
+    public GetTask(JsonCake.RequestBuilder requestBuilder) {
         super(requestBuilder);
     }
 
