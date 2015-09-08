@@ -1,4 +1,4 @@
-package com.crazyma.jsoncakelib;
+package com.crazyma.jsoncake;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -10,10 +10,9 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by david on 2015/9/4.
  */
-public class PostTask extends NetworkingTask {
+public class GetTask extends NetworkingTask {
 
-
-    public PostTask(JsonCake.RequestBuilder requestBuilder) {
+    public GetTask(JsonCake.RequestBuilder requestBuilder) {
         super(requestBuilder);
     }
 
@@ -27,16 +26,11 @@ public class PostTask extends NetworkingTask {
         if(requestBuilder.getWriteTimeout() > 0)
             client.setWriteTimeout(requestBuilder.getWriteTimeout(), TimeUnit.SECONDS);
 
-        if(requestBuilder.getOnWrapFormBody() != null){
-            formBody = requestBuilder.getOnWrapFormBody().wrapForm();
-        }else if(requestBuilder.getFormBody() != null){
-            formBody = requestBuilder.getFormBody();
-        }
 
         Request request = new Request.Builder()
                 .url(requestBuilder.getUrl())
-                .post(formBody)
                 .build();
+
         Response response = client.newCall(request).execute();
         if(response.isSuccessful()){
             return response.body().string();

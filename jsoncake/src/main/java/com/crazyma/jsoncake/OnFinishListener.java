@@ -1,4 +1,4 @@
-package com.crazyma.jsoncakelib;
+package com.crazyma.jsoncake;
 
 public interface OnFinishListener {	
 }

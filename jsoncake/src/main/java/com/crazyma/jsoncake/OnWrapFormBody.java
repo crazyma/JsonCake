@@ -1,4 +1,4 @@
-package com.crazyma.jsoncakelib;
+package com.crazyma.jsoncake;
 
 import com.squareup.okhttp.RequestBody;
 

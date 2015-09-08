@@ -1,4 +1,4 @@
-package com.crazyma.jsoncakelib;
+package com.crazyma.jsoncake;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

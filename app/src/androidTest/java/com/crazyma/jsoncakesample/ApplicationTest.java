@@ -1,4 +1,4 @@
-package com.crazyma.jsoncakelib;
+package com.crazyma.jsoncakesample;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

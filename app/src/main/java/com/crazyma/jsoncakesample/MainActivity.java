@@ -1,4 +1,4 @@
-package com.crazyma.jsoncake;
+package com.crazyma.jsoncakesample;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -6,14 +6,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.crazyma.jsoncakelib.*;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.crazyma.jsoncake.R;
+import com.crazyma.jsoncake.CakeConfig;
+import com.crazyma.jsoncake.JsonCake;
+import com.crazyma.jsoncake.OnFinishLoadStringListener;
 
 public class MainActivity extends AppCompatActivity {
 
