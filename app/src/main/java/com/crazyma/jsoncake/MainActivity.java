@@ -70,14 +70,31 @@ public class MainActivity extends AppCompatActivity {
 //                })
 //                .get();
 
+        JsonCake2.setUrl("http://25lol.com/veeda/api/bank_channel.php")
+                    .setOnFinishListener(new OnFinishLoadStringListener() {
+                        @Override
+                        public void onFinish(String responseStr) {
+                            Log.d("crazyma","111111111 : " + responseStr);
+                        }
+                    })
+                    .get();
+        JsonCake2.setUrl("http://25lol.com/veeda/api/bank_channel.php")
+                .setOnFinishListener(new OnFinishLoadStringListener() {
+                    @Override
+                    public void onFinish(String responseStr) {
+                        Log.d("crazyma","222222222222 : " + responseStr);
+                    }
+                })
+                .get();
 
-        CustomGsonObject customGsonObject = new CustomGsonObject();
-        CustomData customData = customGsonObject.getParsedObject(CustomData.class);
-        Log.i("crazyma", "name : " + customGsonObject.getParsedObject(CustomData.class).getData().get(2).getName());
 
-        List<CustomData2.City> customData2 = customGsonObject.getParsedObject2(CustomData2.City.class);
-        customData2.get(0);
-        Log.i("crazyma", "cities : " + customData2.get(0).getCityName() + ", " + customData2.get(1).getCityName());
+//        CustomGsonObject customGsonObject = new CustomGsonObject();
+//        CustomData customData = customGsonObject.getParsedObject(CustomData.class);
+//        Log.i("crazyma", "name : " + customGsonObject.getParsedObject(CustomData.class).getData().get(2).getName());
+//
+//        List<CustomData2.City> customData2 = customGsonObject.getParsedObject2(CustomData2.City.class);
+//        customData2.get(0);
+//        Log.i("crazyma", "cities : " + customData2.get(0).getCityName() + ", " + customData2.get(1).getCityName());
 
     }
 

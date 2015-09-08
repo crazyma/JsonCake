@@ -17,12 +17,12 @@ import java.io.IOException;
  */
 public abstract class NetworkingTask2 extends AsyncTask<Void, Void, Object> {
 
-    protected RequestBuilder requestBuilder;
+    protected JsonCake2.RequestBuilder requestBuilder;
     protected RequestBody formBody;
     protected Exception exception = null;
     protected String errorMessage = null;
 
-    public NetworkingTask2(RequestBuilder requestBuilder){
+    public NetworkingTask2(JsonCake2.RequestBuilder requestBuilder){
         this.requestBuilder = requestBuilder;
     }
 

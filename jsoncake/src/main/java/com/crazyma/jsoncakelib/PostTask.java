@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 public class PostTask extends NetworkingTask2 {
 
 
-    public PostTask(RequestBuilder requestBuilder) {
+    public PostTask(JsonCake2.RequestBuilder requestBuilder) {
         super(requestBuilder);
     }
 
