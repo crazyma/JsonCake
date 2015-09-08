@@ -49,13 +49,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         //http://25lol.com/veeda/api/bank_channel.php
+        CakeConfig.getInstance().setConnectionTimeout(10);
         JsonCake.setUrl("http://25lol.com/veeda/api/bank_channel.php")
                 .setOnFinishListener(new OnFinishLoadStringListener() {
-                        @Override
-                        public void onFinish(String responseStr) {
-                            Log.d("JsonCake"," : " + responseStr);
-                        }
-                    })
+                    @Override
+                    public void onFinish(String responseStr) {
+                        Log.d("JsonCake", responseStr);
+                    }
+                })
                 .get();
     }
 
