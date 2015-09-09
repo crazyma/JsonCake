@@ -33,6 +33,7 @@ Optional
 
 
 **CakeConfig**
+
 你可以於app初始設定一些參數，讓所有的Task共用此設定
 ```java
 CakeConfig.getInstance()
