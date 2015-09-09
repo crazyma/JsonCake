@@ -4,6 +4,10 @@ Welcome to JsonCake
 
 這是一個Android Library，方便developer開發Android App時，快速執行下載或上傳**Json file**，讓你使用Json進行資料傳輸有如**piece of cake**。
 
+
+----------
+
+
 本Library以AsyncTask為基礎建立，使用了 [OKHttp][2] 以及 [Gson][1] 協助處理相關的操作。
 
 
@@ -33,6 +37,7 @@ Optional
 
 
 **CakeConfig**
+
 
 你可以於app初始設定一些參數，讓所有的Task共用此設定
 ```java
@@ -152,7 +157,8 @@ JsonCake.setUrl("your_url")
 	    .setFormBody(formBody)
 	    .post();
 ```
-
+>**Note:**
+>RequestBody 是 OkHttp所定義的Class，可以依序將Form的資料依序填入。詳情請參考[官網][2]。
 ####Cancel Task
 ```java
 GetTask *getTask = JsonCake.setUrl("your_url")
@@ -163,9 +169,6 @@ GetTask *getTask = JsonCake.setUrl("your_url")
 
 getTask.cancel();
 ```
-
->**Note:**
->RequestBody 是 OkHttp所定義的Class，可以依序將Form的資料依序填入。詳情請參考[官網][2]。
 
 Download
 ---
