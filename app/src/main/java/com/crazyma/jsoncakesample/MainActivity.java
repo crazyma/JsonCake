@@ -5,17 +5,24 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.crazyma.jsoncake.CakeConfig;
+import com.crazyma.jsoncake.GetTask;
 import com.crazyma.jsoncake.JsonCake;
 import com.crazyma.jsoncake.OnFinishLoadStringListener;
 
 public class MainActivity extends AppCompatActivity {
 
+    private GetTask getTask;
+    private TextView textView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        textView = (TextView) findViewById(R.id.text);
     }
 
     @Override
@@ -45,14 +52,20 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         //http://25lol.com/veeda/api/bank_channel.php
         CakeConfig.getInstance().setConnectionTimeout(10);
-        JsonCake.setUrl("http://25lol.com/veeda/api/bank_channel.php")
-                .setOnFinishListener(new OnFinishLoadStringListener() {
-                    @Override
-                    public void onFinish(String responseStr) {
-                        Log.d("JsonCake", responseStr);
-                    }
-                })
-                .get();
+        getTask = JsonCake.setUrl("http://25lol.com/veeda/api/bank_channel.php")
+                            .setOnFinishListener(new OnFinishLoadStringListener() {
+                                @Override
+                                public void onFinish(String responseStr) {
+                                    Log.d("JsonCake", responseStr);
+                                    textView.setText(responseStr);
+                                }
+                            })
+                            .get();
     }
 
+    public void cancelButtonClick(View view) {
+        if(getTask != null){
+            getTask.cancel();
+        }
+    }
 }
