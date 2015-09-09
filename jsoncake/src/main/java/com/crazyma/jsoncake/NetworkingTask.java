@@ -45,21 +45,24 @@ public abstract class NetworkingTask extends AsyncTask<Void, Void, Object> {
         }else{	//	url != null && onFinishListener != null
 
             try {
+                Thread.sleep(requestBuilder.getDelay() * 1000);
+            } catch (InterruptedException e) {
+                errorMessage = "There is a InterruptedException";
+                exception = e;
+                result = null;
+                return result;
+            }
+
+            try {
                 responseStr = onNetworking();
             } catch (Exception e) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
                 errorMessage = "There is a Error through the http connection";
                 result = null;
                 exception = e;
             }
 
             if(responseStr != null){
-                try {
-                    Thread.sleep(requestBuilder.getDelay() * 1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
 
                 if(requestBuilder.isShowingJson()){
                     Log.d(JsonCake.tag, "[url : " + requestBuilder.getUrl() + "]\n" + responseStr);
@@ -77,7 +80,6 @@ public abstract class NetworkingTask extends AsyncTask<Void, Void, Object> {
                             errorMessage = "There is an Error when parsing json by Gson";
                             exception = e;
                             result = null;
-                            e.printStackTrace();
                         }
                     }
 
@@ -91,7 +93,6 @@ public abstract class NetworkingTask extends AsyncTask<Void, Void, Object> {
                         errorMessage = "There is a JsonObject Error";
                         exception = e;
                         result = null;
-                        e.printStackTrace();
                     }
 
                 }else if(requestBuilder.getOnFinishListener() instanceof OnFinishLoadJsonArrayListener){
@@ -104,7 +105,6 @@ public abstract class NetworkingTask extends AsyncTask<Void, Void, Object> {
                         errorMessage = "There is a JsonArray Error";
                         exception = e;
                         result = null;
-                        e.printStackTrace();
                     }
 
                 }else if(requestBuilder.getOnFinishListener() instanceof OnFinishLoadStringListener){
