@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.crazyma.jsoncake.R;
 import com.crazyma.jsoncake.CakeConfig;
 import com.crazyma.jsoncake.JsonCake;
 import com.crazyma.jsoncake.OnFinishLoadStringListener;
