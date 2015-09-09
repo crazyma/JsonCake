@@ -157,8 +157,11 @@ JsonCake.setUrl("your_url")
 	    .setFormBody(formBody)
 	    .post();
 ```
+
 >**Note:**
 >RequestBody 是 OkHttp所定義的Class，可以依序將Form的資料依序填入。詳情請參考[官網][2]。
+
+
 ####Cancel Task
 ```java
 GetTask *getTask = JsonCake.setUrl("your_url")
