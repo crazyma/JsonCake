@@ -8,14 +8,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.crazyma.jsoncake.CakeConfig;
-import com.crazyma.jsoncake.GetTask;
 import com.crazyma.jsoncake.JsonCake;
-import com.crazyma.jsoncake.OnFinishLoadStringListener;
+
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
-    private GetTask getTask;
     private TextView textView;
 
     @Override
@@ -51,21 +52,32 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         //http://25lol.com/veeda/api/bank_channel.php
-        CakeConfig.getInstance().setConnectionTimeout(10);
-        getTask = JsonCake.setUrl("http://25lol.com/veeda/api/bank_channel.php")
-                            .setOnFinishListener(new OnFinishLoadStringListener() {
-                                @Override
-                                public void onFinish(String responseStr) {
-                                    Log.d("JsonCake", responseStr);
-                                    textView.setText(responseStr);
-                                }
-                            })
-                            .get();
+
+        Action1<String> onNextAction = new Action1<String>() {
+            // onError()
+            @Override
+            public void call(String s) {
+                Log.d("JsonCake Sample","Result : " + s);
+            }
+        };
+
+        Action1<Throwable> onErrorAction = new Action1<Throwable>() {
+            // onError()
+            @Override
+            public void call(Throwable throwable) {
+                // Error handling
+                Log.d("JsonCake Sample", "Error : " + throwable.toString());
+            }
+        };
+
+        Observable.create(new JsonCake("http://25lol.com/veeda/api/bank_channel.php"))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(onNextAction,onErrorAction);
+
     }
 
     public void cancelButtonClick(View view) {
-        if(getTask != null){
-            getTask.cancel();
-        }
+
     }
 }
