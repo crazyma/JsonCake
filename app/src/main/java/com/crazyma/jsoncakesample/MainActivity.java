@@ -70,7 +70,12 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        Observable.create(new JsonCake("http://25lol.com/veeda/api/bank_channel.php"))
+
+        JsonCake jsonCake = new JsonCake.Builder()
+                                        .urlStr("http://25lol.com/veeda/api/bank_channel.php")
+                                        .build();
+
+        Observable.create(jsonCake)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(onNextAction,onErrorAction);
