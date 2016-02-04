@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import rx.Observable;
 import rx.Subscriber;
@@ -17,9 +18,42 @@ import rx.Subscriber;
 public class JsonCake implements Observable.OnSubscribe<String>{
 
     private final String tag = "JsonCake";
+
+    public static final class Builder{
+        private String urlStr;
+        private int timeout = 15;
+        private boolean showingJson;
+        private RequestBody formBody;
+
+        public Builder urlStr(String urlStr) {
+            this.urlStr = urlStr;
+            return this;
+        }
+
+        public Builder timeout(int timeout) {
+            this.timeout = timeout;
+            return this;
+        }
+
+        public Builder showingJson(boolean showingJson) {
+            this.showingJson = showingJson;
+            return this;
+        }
+
+        public Builder formBody(RequestBody formBody) {
+            this.formBody = formBody;
+            return this;
+        }
+
+        public JsonCake build(){
+            return new JsonCake(this);
+        }
+    }
+
     private String urlStr;
     private int timeout = 15;
     private boolean showingJson;
+    private RequestBody formBody;
 
     public JsonCake(String urlStr){
         this.urlStr = urlStr;
@@ -30,15 +64,11 @@ public class JsonCake implements Observable.OnSubscribe<String>{
         this.showingJson = showingJson;
     }
 
-    public JsonCake(String urlStr,int timeout){
-        this.urlStr = urlStr;
-        this.timeout = timeout;
-    }
-
-    public JsonCake(String urlStr, int timeout, boolean showingJson) {
-        this.urlStr = urlStr;
-        this.timeout = timeout;
-        this.showingJson = showingJson;
+    public JsonCake(JsonCake.Builder builder) {
+        this.urlStr = builder.urlStr;   //  can not be null
+        this.timeout = builder.timeout;
+        this.showingJson = builder.showingJson;
+        this.formBody = builder.formBody;   //  could be null. if exist -> Http Post; null -> Http Get
     }
 
     @Override
@@ -47,12 +77,22 @@ public class JsonCake implements Observable.OnSubscribe<String>{
         OkHttpClient client = new OkHttpClient.Builder()
                                                 .connectTimeout(timeout,TimeUnit.SECONDS)
                                                 .readTimeout(timeout,TimeUnit.SECONDS)
-                                                .writeTimeout(timeout, TimeUnit.SECONDS)
-                                                .build();
+                .writeTimeout(timeout, TimeUnit.SECONDS)
+                .build();
 
-        Request request = new Request.Builder()
-                                        .url(urlStr)
-                                        .build();
+        Request request;
+
+        if(formBody == null){
+            request = new Request.Builder()
+                    .url(urlStr)
+                    .build();
+        }else{
+            request = new Request.Builder()
+                    .url(urlStr)
+                    .post(formBody)
+                    .build();
+        }
+
 
         String result;
         try {
