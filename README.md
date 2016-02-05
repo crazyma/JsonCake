@@ -5,8 +5,75 @@ Welcome to JsonCake
 這是一個Android Library，方便developer開發Android App時，快速執行下載或上傳**Json file**，讓你使用Json進行資料傳輸有如**piece of cake**。
 
 
-----------
 
+Update[2016/02/05]
+---
+有鑒於RxJava/RxAndroid流行，發現很多東西直接用RxJava更方便且更有彈性，所以本Library就直接閹割大部份的功能，包含`Gson Package`, `Custom Listener`...等等。
+新的`JsonCake`直接定義一個 `Observable.OnSubscribe`讓你可以直接下載 **Json File** 。如果想用舊版的`JsonCake`，請直接觀看下半部的舊版 `README`
+
+Sample
+---
+``` java
+Action1<String> onNextAction = new Action1<String>() {
+            // onError()
+            @Override
+            public void call(String s) {
+                Log.d("JsonCake Sample","Result : " + s);
+            }
+        };
+
+Action1<Throwable> onErrorAction = new Action1<Throwable>() {
+            // onError()
+            @Override
+            public void call(Throwable throwable) {
+                // Error handling
+                Log.d("JsonCake Sample", "Error : " + throwable.toString());
+            }
+        };
+
+
+JsonCake jsonCake = new JsonCake.Builder()
+                                .urlStr("http://25lol.com/veeda/api/bank_channel.php")
+                                .build();
+
+Observable.create(jsonCake)
+	.subscribeOn(Schedulers.io())
+	.observeOn(AndroidSchedulers.mainThread())
+    .subscribe(onNextAction,onErrorAction);
+```
+
+Download
+---
+```xml
+repositories {
+    maven {
+        url  "http://dl.bintray.com/badu/maven"
+    }
+}
+
+...
+
+dependencies {
+	...
+    compile 'com.crazyma.jsoncake:jsoncake:2.0.2'
+}
+```
+Used dependencies
+---
+此Library所使用的dependencies：
+```xml
+	compile 'com.squareup.okhttp3:okhttp:3.0.1'
+    compile 'io.reactivex:rxjava:1.1.0'
+```
+
+Required Android Permission
+--------
+	<uses-permission android:name="android.permission.INTERNET">
+
+
+-------
+以下為舊版 JsonCake(v.1.0.3)
+---
 
 本Library以AsyncTask為基礎建立，使用了 [OKHttp][2] 以及 [Gson][1] 協助處理相關的操作。
 
@@ -203,7 +270,7 @@ Required Android Permission
 
 License
 -------
-	Copyright 2015 David Ma
+	Copyright 2016 David Ma
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
