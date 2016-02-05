@@ -97,6 +97,9 @@ public class JsonCake implements Observable.OnSubscribe<String>{
         String result;
         try {
             Response response = client.newCall(request).execute();
+            if(!response.isSuccessful())
+                throw new IOException("Unexpected code " + response);
+
             result = response.body().string();
         } catch (IOException e) {
             e.printStackTrace();
