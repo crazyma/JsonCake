@@ -9,6 +9,10 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.crazyma.jsoncake.JsonCake;
+import com.crazyma.jsoncake.JsonCakeWithPresent;
+
+import java.util.HashMap;
+import java.util.Timer;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -80,6 +84,24 @@ public class MainActivity extends AppCompatActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(onNextAction,onErrorAction);
 
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("other","XDDDDDDDDD");
+
+        JsonCakeWithPresent jsonCakeWithPresent = new JsonCakeWithPresent.Builder()
+                                                                        .urlStr("http://25lol.com/veeda/api/bank_channel.php")
+                                                                        .present(hashMap)
+                                                                        .build();
+
+        Observable.create(jsonCakeWithPresent)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<HashMap<String,Object>>() {
+                    @Override
+                    public void call(HashMap<String,Object> hashMap) {
+                        Log.d("crazyma","??????  "  + hashMap.get("other").toString());
+                        Log.d("crazyma","!!!!!!  "  + hashMap.get("json").toString());
+                    }
+                }, onErrorAction);
     }
 
     public void cancelButtonClick(View view) {
