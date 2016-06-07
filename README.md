@@ -55,15 +55,15 @@ repositories {
 
 dependencies {
 	...
-    compile 'com.crazyma.jsoncake:jsoncake:2.0.2'
+    compile 'com.crazyma.jsoncake:jsoncake:2.0.5'
 }
 ```
 Used dependencies
 ---
 此Library所使用的dependencies：
 ```xml
-	compile 'com.squareup.okhttp3:okhttp:3.0.1'
-    compile 'io.reactivex:rxjava:1.1.0'
+	compile 'com.squareup.okhttp3:okhttp:3.3.1'
+    compile 'io.reactivex:rxjava:1.1.5'
 ```
 
 Required Android Permission
