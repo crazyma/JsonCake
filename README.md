@@ -5,8 +5,23 @@ Welcome to JsonCake
 這是一個Android Library，方便developer開發Android App時，快速執行下載或上傳**Json file**，讓你使用Json進行資料傳輸有如**piece of cake**。
 
 
+Update - v2.1.0 [2016/07/07]
+---
+導入了 [Stetho](http://facebook.github.io/stetho/) 套件 (`com.facebook.stetho:stetho-okhttp3:1.3.1`) <p>
+可以直接利用瀏覽器查看 ***Network Request/Response*** <p>
+只需要在 `Application` 啟用 Stetho 即可，如下範例：
+``` java
+public class MyApp extends Application {
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Stetho.initializeWithDefaults(this);
+    }
+}
+```
+> Stetho 的使用請參照[官網](http://facebook.github.io/stetho/)
 
-Update[2016/02/05]
+Update - v2.0.5 [2016/02/05]
 ---
 有鑒於RxJava/RxAndroid流行，發現很多東西直接用RxJava更方便且更有彈性，所以本Library就直接閹割大部份的功能，包含`Gson Package`, `Custom Listener`...等等。
 新的`JsonCake`直接定義一個 `Observable.OnSubscribe`讓你可以直接下載 **Json File** 。如果想用舊版的`JsonCake`，請直接觀看下半部的舊版 `README`
