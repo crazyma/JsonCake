@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.crazyma.jsoncake.JsonCake;
 import com.crazyma.jsoncake.JsonCakeWithPresent;
+import com.facebook.stetho.Stetho;
 
 import java.util.HashMap;
 import java.util.Timer;
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         textView = (TextView) findViewById(R.id.text);
     }
