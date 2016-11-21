@@ -5,7 +5,7 @@ Welcome to JsonCake
 這是一個Android Library，方便developer開發Android App時，快速執行下載或上傳**Json file**，讓你使用Json進行資料傳輸有如**piece of cake**。
 
 
-Update - v2.1.0 [2016/07/07]
+Update - v2.1.1 [2016/07/07]
 ---
 導入了 [Stetho](http://facebook.github.io/stetho/) 套件 (`com.facebook.stetho:stetho-okhttp3:1.3.1`) <p>
 可以直接利用瀏覽器查看 ***Network Request/Response*** <p>
@@ -70,7 +70,7 @@ repositories {
 
 dependencies {
 	...
-    compile 'com.crazyma.jsoncake:jsoncake:2.1.0'
+    compile 'com.crazyma.jsoncake:jsoncake:2.1.1'
 }
 ```
 Used dependencies

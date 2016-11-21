@@ -2,6 +2,8 @@ package com.crazyma.jsoncake;
 
 import android.util.Log;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
@@ -84,6 +86,7 @@ public class JsonCakeWithPresent implements Observable.OnSubscribe<HashMap<Strin
     public void call(Subscriber<? super HashMap<String,Object>> subscriber) {
 
         OkHttpClient client = new OkHttpClient.Builder()
+                .addNetworkInterceptor(new StethoInterceptor())
                 .connectTimeout(timeout, TimeUnit.SECONDS)
                 .readTimeout(timeout,TimeUnit.SECONDS)
                 .writeTimeout(timeout, TimeUnit.SECONDS)
