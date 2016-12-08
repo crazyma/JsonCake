@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         JsonCake jsonCake = new JsonCake.Builder()
-                                        .urlStr("http://25lol.com/veeda/api/bank_channel.php")
+                                        .urlStr("http://li867-162.members.linode.com/json.php")
                                         .build();
 
         Observable.create(jsonCake)
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         hashMap.put("other","XDDDDDDDDD");
 
         JsonCakeWithPresent jsonCakeWithPresent = new JsonCakeWithPresent.Builder()
-                                                                        .urlStr("http://25lol.com/veeda/api/bank_channel.php")
+                                                                        .urlStr("http://li867-162.members.linode.com/json.php")
                                                                         .present(hashMap)
                                                                         .build();
 
