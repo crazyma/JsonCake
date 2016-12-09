@@ -7,17 +7,21 @@ import com.facebook.stetho.okhttp3.StethoInterceptor;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.functions.Cancellable;
+import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import rx.Observable;
-import rx.Subscriber;
+import io.reactivex.Observable;
 
 /**
- * Created by david on 2015/9/4.
+ * Created by david on 2016/12/8.
  */
-public class JsonCake implements Observable.OnSubscribe<String>{
+
+public class JsonCake {
 
     private final String tag = "JsonCake";
 
@@ -61,63 +65,80 @@ public class JsonCake implements Observable.OnSubscribe<String>{
         this.urlStr = urlStr;
     }
 
-    public JsonCake(String urlStr,boolean showingJson){
+    public JsonCake(String urlStr, boolean showingJson){
         this.urlStr = urlStr;
         this.showingJson = showingJson;
     }
 
-    public JsonCake(JsonCake.Builder builder) {
+    public JsonCake(Builder builder) {
         this.urlStr = builder.urlStr;   //  can not be null
         this.timeout = builder.timeout;
         this.showingJson = builder.showingJson;
         this.formBody = builder.formBody;   //  could be null. if exist -> Http Post; null -> Http Get
     }
 
-    @Override
-    public void call(Subscriber<? super String> subscriber) {
+    public Observable<String> start() {
 
-        OkHttpClient client = new OkHttpClient.Builder()
-                                                .addNetworkInterceptor(new StethoInterceptor())
-                                                .connectTimeout(timeout,TimeUnit.SECONDS)
-                                                .readTimeout(timeout,TimeUnit.SECONDS)
-                .writeTimeout(timeout, TimeUnit.SECONDS)
-                .build();
+        return Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(final ObservableEmitter<String> emitter) throws Exception {
 
-        Request request;
-
-        if(formBody == null){
-            request = new Request.Builder()
-                    .url(urlStr)
-                    .build();
-        }else{
-            request = new Request.Builder()
-                    .url(urlStr)
-                    .post(formBody)
-                    .build();
-        }
+                if(urlStr == null)
+                    emitter.onError(new NullPointerException("urlStr is Null"));
 
 
-        String result;
-        try {
-            Response response = client.newCall(request).execute();
-            if(!response.isSuccessful())
-                throw new IOException("Unexpected code " + response);
+                OkHttpClient client = new OkHttpClient.Builder()
+                        .addNetworkInterceptor(new StethoInterceptor())
+                        .connectTimeout(timeout, TimeUnit.SECONDS)
+                        .readTimeout(timeout, TimeUnit.SECONDS)
+                        .writeTimeout(timeout, TimeUnit.SECONDS)
+                        .build();
 
-            result = response.body().string();
-        } catch (IOException e) {
-            e.printStackTrace();
-            subscriber.onError(e);
-            return;
-        }
+                Request request;
+                if (formBody == null) {
+                    request = new Request.Builder()
+                            .url(urlStr)
+                            .build();
+                } else {
+                    request = new Request.Builder()
+                            .url(urlStr)
+                            .post(formBody)
+                            .build();
+                }
 
-        if(result == null) {
-            subscriber.onError(new NullPointerException("Response in JsonCake is null"));
-        }else {
-            if(showingJson)
-                Log.d(tag, result);
+                final Call call = client.newCall(request);
 
-            subscriber.onNext(result);
-            subscriber.onCompleted();
-        }
+                emitter.setCancellable(new Cancellable() {
+                    @Override
+                    public void cancel() throws Exception {
+                        call.cancel();
+                    }
+                });
+
+                String result;
+                try {
+                    Response response = call.execute();
+                    if (!response.isSuccessful())
+                        emitter.onError( new IOException("Unexpected code " + response));
+
+                    result = response.body().string();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    emitter.onError(e);
+                    return;
+                }
+
+                if (result == null) {
+                    emitter.onError(new NullPointerException("Response in JsonCake is null"));
+                } else {
+                    if (showingJson)
+                        Log.d(tag, result);
+
+                    emitter.onNext(result);
+                    emitter.onComplete();
+                }
+            }
+        });
     }
+    
 }

@@ -2,6 +2,7 @@ package com.crazyma.jsoncakesample;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.ArrayMap;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,15 +11,10 @@ import android.widget.TextView;
 
 import com.crazyma.jsoncake.JsonCake;
 import com.crazyma.jsoncake.JsonCakeWithPresent;
-import com.facebook.stetho.Stetho;
 
-import java.util.HashMap;
-import java.util.Timer;
-
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -57,53 +53,62 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        //http://25lol.com/veeda/api/bank_channel.php
+        doNetworking();
+    }
 
-        Action1<String> onNextAction = new Action1<String>() {
-            // onError()
-            @Override
-            public void call(String s) {
-                Log.d("JsonCake Sample","Result : " + s);
-            }
-        };
-
-        Action1<Throwable> onErrorAction = new Action1<Throwable>() {
-            // onError()
-            @Override
-            public void call(Throwable throwable) {
-                // Error handling
-                Log.d("JsonCake Sample", "Error : " + throwable.toString());
-            }
-        };
-
-
+    private void doNetworking(){
         JsonCake jsonCake = new JsonCake.Builder()
-                                        .urlStr("http://li867-162.members.linode.com/json.php")
-                                        .build();
+                .urlStr("http://li867-162.members.linode.com/json.php")
+                .build();
 
-        Observable.create(jsonCake)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(onNextAction,onErrorAction);
-
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("other","XDDDDDDDDD");
-
-        JsonCakeWithPresent jsonCakeWithPresent = new JsonCakeWithPresent.Builder()
-                                                                        .urlStr("http://li867-162.members.linode.com/json.php")
-                                                                        .present(hashMap)
-                                                                        .build();
-
-        Observable.create(jsonCakeWithPresent)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<HashMap<String,Object>>() {
+        jsonCake.start()
+                .subscribeOn(io.reactivex.schedulers.Schedulers.io())
+                .subscribeOn(io.reactivex.android.schedulers.AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<String>() {
                     @Override
-                    public void call(HashMap<String,Object> hashMap) {
-                        Log.d("crazyma","??????  "  + hashMap.get("other").toString());
-                        Log.d("crazyma","!!!!!!  "  + hashMap.get("json").toString());
+                    public void onNext(String value) {
+                        Log.d("crazyma",value);
                     }
-                }, onErrorAction);
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("crazyma",e.toString());
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+        ArrayMap<String, Object> present = new ArrayMap<>();
+        present.put("other","XDDDDDDDDDDDDD");
+
+        JsonCakeWithPresent jsonCake2 = new JsonCakeWithPresent.Builder()
+                .urlStr("http://li867-162.members.linode.com/json.php")
+                .present(present)
+                .build();
+
+        jsonCake2.start()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<ArrayMap<String, Object>>() {
+                    @Override
+                    public void onNext(ArrayMap<String, Object> value) {
+                        Log.d("crazyma","??????  "  + value.get("other").toString());
+                        Log.d("crazyma","!!!!!!  "  + value.get("json").toString());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
     public void cancelButtonClick(View view) {

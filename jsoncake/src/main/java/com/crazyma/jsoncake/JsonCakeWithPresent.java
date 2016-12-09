@@ -1,24 +1,31 @@
 package com.crazyma.jsoncake;
 
+import android.annotation.TargetApi;
+import android.os.Build;
+import android.util.ArrayMap;
 import android.util.Log;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 
+
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.functions.Cancellable;
+import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import rx.Observable;
-import rx.Subscriber;
 
 /**
  * Created by david on 2016/2/19.
  */
-public class JsonCakeWithPresent implements Observable.OnSubscribe<HashMap<String,Object>> {
+@TargetApi(19)
+public class JsonCakeWithPresent {
 
     private final String tag = "JsonCake";
 
@@ -27,7 +34,7 @@ public class JsonCakeWithPresent implements Observable.OnSubscribe<HashMap<Strin
         private int timeout = 15;
         private boolean showingJson;
         private RequestBody formBody;
-        private HashMap<String,Object> present;
+        private ArrayMap<String,Object> present;
 
         public Builder urlStr(String urlStr) {
             this.urlStr = urlStr;
@@ -49,7 +56,7 @@ public class JsonCakeWithPresent implements Observable.OnSubscribe<HashMap<Strin
             return this;
         }
 
-        public Builder present(HashMap present) {
+        public Builder present(ArrayMap present) {
             this.present = present;
             return this;
         }
@@ -63,7 +70,7 @@ public class JsonCakeWithPresent implements Observable.OnSubscribe<HashMap<Strin
     private int timeout = 15;
     private boolean showingJson;
     private RequestBody formBody;
-    private HashMap<String,Object> present;
+    private ArrayMap<String,Object> present;
 
     public JsonCakeWithPresent(String urlStr){
         this.urlStr = urlStr;
@@ -82,56 +89,77 @@ public class JsonCakeWithPresent implements Observable.OnSubscribe<HashMap<Strin
         this.present = builder.present; //  could be null.
     }
 
-    @Override
-    public void call(Subscriber<? super HashMap<String,Object>> subscriber) {
 
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addNetworkInterceptor(new StethoInterceptor())
-                .connectTimeout(timeout, TimeUnit.SECONDS)
-                .readTimeout(timeout,TimeUnit.SECONDS)
-                .writeTimeout(timeout, TimeUnit.SECONDS)
-                .build();
+    public Observable<ArrayMap<String,Object>> start() {
 
-        Request request;
-
-        if(formBody == null){
-            request = new Request.Builder()
-                    .url(urlStr)
-                    .build();
-        }else{
-            request = new Request.Builder()
-                    .url(urlStr)
-                    .post(formBody)
-                    .build();
-        }
+        if(Build.VERSION.SDK_INT < 19)
+            return Observable.empty();
 
 
-        String result;
-        try {
-            Response response = client.newCall(request).execute();
-            if(!response.isSuccessful())
-                throw new IOException("Unexpected code " + response);
+        return Observable.create(new ObservableOnSubscribe<ArrayMap<String,Object>>() {
+            @Override
+            public void subscribe(ObservableEmitter<ArrayMap<String,Object>> emitter) throws Exception {
 
-            result = response.body().string();
-        } catch (IOException e) {
-            e.printStackTrace();
-            subscriber.onError(e);
-            return;
-        }
+                if(urlStr == null)
+                    emitter.onError(new NullPointerException("urlStr is Null"));
 
-        if(result == null) {
-            subscriber.onError(new NullPointerException("Response in JsonCake is null"));
-        }else {
-            if(showingJson)
-                Log.d(tag, result);
+                OkHttpClient client = new OkHttpClient.Builder()
+                        .addNetworkInterceptor(new StethoInterceptor())
+                        .connectTimeout(timeout, TimeUnit.SECONDS)
+                        .readTimeout(timeout,TimeUnit.SECONDS)
+                        .writeTimeout(timeout, TimeUnit.SECONDS)
+                        .build();
 
-            if(present == null)
-                present = new HashMap();
+                Request request;
+                if(formBody == null){
+                    request = new Request.Builder()
+                            .url(urlStr)
+                            .build();
+                }else{
+                    request = new Request.Builder()
+                            .url(urlStr)
+                            .post(formBody)
+                            .build();
+                }
 
-            present.put("json",result);
-            subscriber.onNext(present);
-            subscriber.onCompleted();
-        }
+                final Call call = client.newCall(request);
+
+                emitter.setCancellable(new Cancellable() {
+                    @Override
+                    public void cancel() throws Exception {
+                        call.cancel();
+                    }
+                });
+
+                String result;
+                try {
+                    Response response = call.execute();
+                    if(!response.isSuccessful())
+                        emitter.onError( new IOException("Unexpected code " + response));
+
+                    result = response.body().string();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    emitter.onError(e);
+                    return;
+                }
+
+                if(result == null) {
+                    emitter.onError(new NullPointerException("Response in JsonCake is null"));
+                }else {
+                    if(showingJson)
+                        Log.d(tag, result);
+
+                    if(present == null)
+                        present = new ArrayMap<>();
+                    present.put("json",result);
+
+                    emitter.onNext(present);
+                    emitter.onComplete();
+                }
+            }
+        });
+
     }
 
 }
