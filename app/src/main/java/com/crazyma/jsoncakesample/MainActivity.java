@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
         jsonCake.start()
                 .subscribeOn(io.reactivex.schedulers.Schedulers.io())
-                .subscribeOn(io.reactivex.android.schedulers.AndroidSchedulers.mainThread())
+                .observeOn(io.reactivex.android.schedulers.AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableObserver<String>() {
                     @Override
                     public void onNext(String value) {
