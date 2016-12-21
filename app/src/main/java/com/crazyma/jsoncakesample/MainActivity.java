@@ -62,8 +62,8 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         jsonCake.start()
-                .subscribeOn(io.reactivex.schedulers.Schedulers.io())
-                .observeOn(io.reactivex.android.schedulers.AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableObserver<String>() {
                     @Override
                     public void onNext(String value) {
@@ -80,7 +80,9 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
+    }
 
+    private void doNetworking2(){
         ArrayMap<String, Object> present = new ArrayMap<>();
         present.put("other","XDDDDDDDDDDDDD");
 
@@ -95,8 +97,8 @@ public class MainActivity extends AppCompatActivity {
                 .subscribeWith(new DisposableObserver<ArrayMap<String, Object>>() {
                     @Override
                     public void onNext(ArrayMap<String, Object> value) {
-                        Log.d("crazyma","??????  "  + value.get("other").toString());
-                        Log.d("crazyma","!!!!!!  "  + value.get("json").toString());
+                        Log.d("crazyma","json : "  + value.get("json").toString());
+                        Log.d("crazyma","other info : "  + value.get("other").toString());
                     }
 
                     @Override
