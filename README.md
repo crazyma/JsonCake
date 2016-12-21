@@ -5,7 +5,62 @@ Welcome to JsonCake
 這是一個Android Library，方便developer開發Android App時，快速執行下載或上傳**Json file**，讓你使用Json進行資料傳輸有如**piece of cake**。
 
 
-Update - v2.1.1 [2016/07/07]
+
+Update - v2.2.0 [2016/12/21]
+---
+導入 RxJava2。重新簡介目前功能
+- 使用 [RxJava2 (v2.0.2)](https://github.com/ReactiveX/RxJava/wiki/What's-different-in-2.0)
+- 使用 [Stetho (v1.3.1)](http://facebook.github.io/stetho/) 套件，可利用 Network Inspection 瀏覽 api call 的資訊
+
+
+HowTo
+---
+``` java
+JsonCake jsonCake = new JsonCake.Builder()
+                .urlStr("YOUR_URL")
+                .build();
+
+jsonCake.start()
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribeWith(new DisposableObserver<String>() {
+                    @Override
+                    public void onNext(String value) {
+                        // Get your result here
+                        Log.d(TAG,value);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG,e.toString());
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+```
+
+你可以利用 `JsonCake` 設定一些參數
+``` java
+// This is okhttp object for http post
+MultipartBody.Builder bodybuilder =
+                new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart("data",data);
+
+// This is okhttp object for http post
+RequestBody requestBody = bodybuilder.build();
+
+JsonCake jsonCake = new JsonCake.Builder()
+                .urlStr("YOUR_URL")
+                .showingJson(true)    // true if you want to log the json string
+                .timeout(5) // set timeout (second)
+                .formBody(requestBody) // set form data if you want to do http-post
+                .build();
+```
+啟用 Stetho
 ---
 導入了 [Stetho](http://facebook.github.io/stetho/) 套件 (`com.facebook.stetho:stetho-okhttp3:1.3.1`) <p>
 可以直接利用瀏覽器查看 ***Network Request/Response*** <p>
@@ -19,43 +74,7 @@ public class MyApp extends Application {
     }
 }
 ```
-> Stetho 的使用請參照[官網](http://facebook.github.io/stetho/)
 
-Update - v2.0.5 [2016/02/05]
----
-有鑒於RxJava/RxAndroid流行，發現很多東西直接用RxJava更方便且更有彈性，所以本Library就直接閹割大部份的功能，包含`Gson Package`, `Custom Listener`...等等。
-新的`JsonCake`直接定義一個 `Observable.OnSubscribe`讓你可以直接下載 **Json File** 。如果想用舊版的`JsonCake`，請直接觀看下半部的舊版 `README`
-
-Sample
----
-``` java
-Action1<String> onNextAction = new Action1<String>() {
-            // onError()
-            @Override
-            public void call(String s) {
-                Log.d("JsonCake Sample","Result : " + s);
-            }
-        };
-
-Action1<Throwable> onErrorAction = new Action1<Throwable>() {
-            // onError()
-            @Override
-            public void call(Throwable throwable) {
-                // Error handling
-                Log.d("JsonCake Sample", "Error : " + throwable.toString());
-            }
-        };
-
-
-JsonCake jsonCake = new JsonCake.Builder()
-                                .urlStr("http://25lol.com/veeda/api/bank_channel.php")
-                                .build();
-
-Observable.create(jsonCake)
-	.subscribeOn(Schedulers.io())
-	.observeOn(AndroidSchedulers.mainThread())
-    .subscribe(onNextAction,onErrorAction);
-```
 
 Download
 ---
@@ -70,16 +89,16 @@ repositories {
 
 dependencies {
 	...
-    compile 'com.crazyma.jsoncake:jsoncake:2.1.1'
+    compile 'com.crazyma.jsoncake:jsoncake:2.2.0'
 }
 ```
 Used dependencies
 ---
 此Library所使用的dependencies：
 ```xml
-    compile 'com.squareup.okhttp3:okhttp:3.3.1'
-    compile 'io.reactivex:rxjava:1.1.5'
-    compile 'com.facebook.stetho:stetho-okhttp3:1.3.1'
+compile 'com.squareup.okhttp3:okhttp:3.3.1'
+compile 'com.facebook.stetho:stetho-okhttp3:1.3.1'
+compile 'io.reactivex.rxjava2:rxjava:2.0.2'
 ```
 
 Required Android Permission
@@ -128,13 +147,13 @@ CakeConfig.getInstance()
 		  .setConnectionTimeout(10);
 		  .setDelay(1)
 		  .setPool(Executors.newFixedThreadPool(5));
-		  
+
 /*	此JsonCake Task會自動帶入上述設定	*/		  
 JsonCake.setUrl("you_url")
         .setOnFinishListener(new OnFinishLoadStringListener() {
 			@Override
             public void onFinish(String responseStr) {
-            
+
             }
 	     })
          .get();
@@ -155,11 +174,11 @@ JsonCake.setUrl("your_json_file_url")
 				// TODO Auto-generated method stub
 				/* write your code here */
 			}
-    		
+
 	    })
 	    .get();
 ```
- 
+
 #### Load JSONArray Object with Read Timeout
 ```java
 JsonCake.setUrl("your_json_file_url")
@@ -171,7 +190,7 @@ JsonCake.setUrl("your_json_file_url")
 				// TODO Auto-generated method stub
 				/* write your code here */
 			}
-    		
+
 	    })
 	    .get();
 ```
@@ -195,7 +214,7 @@ JsonCake.setUrl("your_json_file_url")
 				// TODO Auto-generated method stub
 				/* write your code here */
 			}
-    		
+
 	    })
 	    .get();
 ```
@@ -212,7 +231,7 @@ JsonCake.setUrl("your_json_file_url")
 				DataSet dataSet = (DataSet)object;
 				/* write your code here */
 			}
-    		
+
 	    })
 	    .get();
 ```
@@ -226,16 +245,16 @@ RequestBody formBody = new FormEncodingBuilder()
 	.add("Name", "Tom") // key-value pair in POST
     .add("Age", "25")
     .build();
-        
+
 JsonCake.setUrl("your_url")
 	    .setOnFinishListener(new OnFinishLoadStringListener(){
-	
+
 			@Override
 			public void onFinish(String responseStr) {
 				// TODO Auto-generated method stub
 				/* write your code here */
 			}
-        		
+
 	    })        	
 	    .setFormBody(formBody)
 	    .post();
@@ -250,7 +269,7 @@ JsonCake.setUrl("your_url")
 GetTask *getTask = JsonCake.setUrl("your_url")
 						   .setOnFinishListener(...)
 						   .get();
-						   
+
 /* your cord... */
 
 getTask.cancel();
