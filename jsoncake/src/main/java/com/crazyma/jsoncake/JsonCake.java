@@ -4,9 +4,16 @@ import android.util.Log;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 
+import org.reactivestreams.Publisher;
+
 import java.io.IOException;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableEmitter;
+import io.reactivex.FlowableOnSubscribe;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.functions.Cancellable;
@@ -77,8 +84,70 @@ public class JsonCake {
         this.formBody = builder.formBody;   //  could be null. if exist -> Http Post; null -> Http Get
     }
 
-    public Observable<String> start() {
+    public Flowable<String> startWithFlowable(){
 
+        return Flowable.create(new FlowableOnSubscribe<String>() {
+            @Override
+            public void subscribe(FlowableEmitter<String> emitter) throws Exception {
+                if(urlStr == null)
+                    emitter.onError(new NullPointerException("urlStr is Null"));
+
+
+                OkHttpClient client = new OkHttpClient.Builder()
+                        .addNetworkInterceptor(new StethoInterceptor())
+                        .connectTimeout(timeout, TimeUnit.SECONDS)
+                        .readTimeout(timeout, TimeUnit.SECONDS)
+                        .writeTimeout(timeout, TimeUnit.SECONDS)
+                        .build();
+
+                Request request;
+                if (formBody == null) {
+                    request = new Request.Builder()
+                            .url(urlStr)
+                            .build();
+                } else {
+                    request = new Request.Builder()
+                            .url(urlStr)
+                            .post(formBody)
+                            .build();
+                }
+
+                final Call call = client.newCall(request);
+
+                emitter.setCancellable(new Cancellable() {
+                    @Override
+                    public void cancel() throws Exception {
+                        call.cancel();
+                    }
+                });
+
+                String result;
+                try {
+                    Response response = call.execute();
+                    if (!response.isSuccessful())
+                        emitter.onError( new IOException("Unexpected code " + response));
+
+                    result = response.body().string();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    emitter.onError(e);
+                    return;
+                }
+
+                if (result == null) {
+                    emitter.onError(new NullPointerException("Response in JsonCake is null"));
+                } else {
+                    if (showingJson)
+                        Log.d(tag, result);
+
+                    emitter.onNext(result);
+                    emitter.onComplete();
+                }
+            }
+        }, BackpressureStrategy.BUFFER);
+    }
+
+    public Observable<String> start() {
         return Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(final ObservableEmitter<String> emitter) throws Exception {
