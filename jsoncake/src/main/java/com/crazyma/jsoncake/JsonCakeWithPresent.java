@@ -9,6 +9,7 @@ import com.facebook.stetho.okhttp3.StethoInterceptor;
 
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.BackpressureStrategy;
@@ -35,6 +36,7 @@ public class JsonCakeWithPresent {
 
     public static final class Builder{
         private String urlStr;
+        private URL url;
         private int timeout = 15;
         private boolean showingJson;
         private RequestBody formBody;
@@ -42,6 +44,11 @@ public class JsonCakeWithPresent {
 
         public Builder urlStr(String urlStr) {
             this.urlStr = urlStr;
+            return this;
+        }
+
+        public Builder url(URL url){
+            this.url = url;
             return this;
         }
 
@@ -71,6 +78,7 @@ public class JsonCakeWithPresent {
     }
 
     private String urlStr;
+    private URL url;
     private int timeout = 15;
     private boolean showingJson;
     private RequestBody formBody;
@@ -85,8 +93,18 @@ public class JsonCakeWithPresent {
         this.showingJson = showingJson;
     }
 
+    public JsonCakeWithPresent(URL url){
+        this.url = url;
+    }
+
+    public JsonCakeWithPresent(URL url,boolean showingJson){
+        this.url = url;
+        this.showingJson = showingJson;
+    }
+
     public JsonCakeWithPresent(JsonCakeWithPresent.Builder builder) {
         this.urlStr = builder.urlStr;   //  can not be null
+        this.url = builder.url;
         this.timeout = builder.timeout;
         this.showingJson = builder.showingJson;
         this.formBody = builder.formBody;   //  could be null. if exist -> Http Post; null -> Http Get
@@ -100,8 +118,13 @@ public class JsonCakeWithPresent {
         return Flowable.create(new FlowableOnSubscribe<ArrayMap<String, Object>>() {
             @Override
             public void subscribe(FlowableEmitter<ArrayMap<String, Object>> emitter) throws Exception {
-                if(urlStr == null)
-                    emitter.onError(new NullPointerException("urlStr is Null"));
+                if(url == null){
+                    if(urlStr == null) {
+                        emitter.onError(new NullPointerException("url is Null"));
+                    }else{
+                        url = new URL(urlStr);
+                    }
+                }
 
                 OkHttpClient client = new OkHttpClient.Builder()
                         .addNetworkInterceptor(new StethoInterceptor())
@@ -113,11 +136,11 @@ public class JsonCakeWithPresent {
                 Request request;
                 if(formBody == null){
                     request = new Request.Builder()
-                            .url(urlStr)
+                            .url(url)
                             .build();
                 }else{
                     request = new Request.Builder()
-                            .url(urlStr)
+                            .url(url)
                             .post(formBody)
                             .build();
                 }
@@ -171,8 +194,13 @@ public class JsonCakeWithPresent {
             @Override
             public void subscribe(ObservableEmitter<ArrayMap<String,Object>> emitter) throws Exception {
 
-                if(urlStr == null)
-                    emitter.onError(new NullPointerException("urlStr is Null"));
+                if(url == null){
+                    if(urlStr == null) {
+                        emitter.onError(new NullPointerException("url is Null"));
+                    }else{
+                        url = new URL(urlStr);
+                    }
+                }
 
                 OkHttpClient client = new OkHttpClient.Builder()
                         .addNetworkInterceptor(new StethoInterceptor())
@@ -184,11 +212,11 @@ public class JsonCakeWithPresent {
                 Request request;
                 if(formBody == null){
                     request = new Request.Builder()
-                            .url(urlStr)
+                            .url(url)
                             .build();
                 }else{
                     request = new Request.Builder()
-                            .url(urlStr)
+                            .url(url)
                             .post(formBody)
                             .build();
                 }

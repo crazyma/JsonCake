@@ -7,6 +7,7 @@ import com.facebook.stetho.okhttp3.StethoInterceptor;
 import org.reactivestreams.Publisher;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -34,12 +35,18 @@ public class JsonCake {
 
     public static final class Builder{
         private String urlStr;
+        private URL url;
         private int timeout = 15;
         private boolean showingJson;
         private RequestBody formBody;
 
         public Builder urlStr(String urlStr) {
             this.urlStr = urlStr;
+            return this;
+        }
+
+        public Builder url(URL url){
+            this.url = url;
             return this;
         }
 
@@ -64,6 +71,7 @@ public class JsonCake {
     }
 
     private String urlStr;
+    private URL url;
     private int timeout = 15;
     private boolean showingJson;
     private RequestBody formBody;
@@ -77,8 +85,18 @@ public class JsonCake {
         this.showingJson = showingJson;
     }
 
+    public JsonCake(URL url){
+        this.url = url;
+    }
+
+    public JsonCake(URL url, boolean showingJson){
+        this.url = url;
+        this.showingJson = showingJson;
+    }
+
     public JsonCake(Builder builder) {
         this.urlStr = builder.urlStr;   //  can not be null
+        this.url = builder.url;
         this.timeout = builder.timeout;
         this.showingJson = builder.showingJson;
         this.formBody = builder.formBody;   //  could be null. if exist -> Http Post; null -> Http Get
@@ -89,9 +107,14 @@ public class JsonCake {
         return Flowable.create(new FlowableOnSubscribe<String>() {
             @Override
             public void subscribe(FlowableEmitter<String> emitter) throws Exception {
-                if(urlStr == null)
-                    emitter.onError(new NullPointerException("urlStr is Null"));
 
+                if(url == null){
+                    if(urlStr == null) {
+                        emitter.onError(new NullPointerException("url is Null"));
+                    }else{
+                        url = new URL(urlStr);
+                    }
+                }
 
                 OkHttpClient client = new OkHttpClient.Builder()
                         .addNetworkInterceptor(new StethoInterceptor())
@@ -103,11 +126,11 @@ public class JsonCake {
                 Request request;
                 if (formBody == null) {
                     request = new Request.Builder()
-                            .url(urlStr)
+                            .url(url)
                             .build();
                 } else {
                     request = new Request.Builder()
-                            .url(urlStr)
+                            .url(url)
                             .post(formBody)
                             .build();
                 }
@@ -152,9 +175,13 @@ public class JsonCake {
             @Override
             public void subscribe(final ObservableEmitter<String> emitter) throws Exception {
 
-                if(urlStr == null)
-                    emitter.onError(new NullPointerException("urlStr is Null"));
-
+                if(url == null){
+                    if(urlStr == null) {
+                        emitter.onError(new NullPointerException("url is Null"));
+                    }else{
+                        url = new URL(urlStr);
+                    }
+                }
 
                 OkHttpClient client = new OkHttpClient.Builder()
                         .addNetworkInterceptor(new StethoInterceptor())
@@ -166,11 +193,11 @@ public class JsonCake {
                 Request request;
                 if (formBody == null) {
                     request = new Request.Builder()
-                            .url(urlStr)
+                            .url(url)
                             .build();
                 } else {
                     request = new Request.Builder()
-                            .url(urlStr)
+                            .url(url)
                             .post(formBody)
                             .build();
                 }
