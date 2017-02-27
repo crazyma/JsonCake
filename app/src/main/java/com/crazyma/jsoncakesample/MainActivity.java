@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void doNetworking(){
         JsonCake jsonCake = new JsonCake.Builder()
-                .urlStr("http://li867-162.members.linode.com/json.php")
+                .urlStr("http://beibeilab.com/test/sample.json")
                 .build();
 
         jsonCake.start()
