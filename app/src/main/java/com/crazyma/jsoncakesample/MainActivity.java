@@ -9,12 +9,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.crazyma.jsoncake.ClientHelper;
 import com.crazyma.jsoncake.JsonCake;
 import com.crazyma.jsoncake.JsonCakeWithPresent;
+import com.facebook.stetho.okhttp3.StethoInterceptor;
+
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.OkHttpClient;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -56,6 +61,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void doNetworking(){
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addNetworkInterceptor(new StethoInterceptor())
+                .connectTimeout(15, TimeUnit.SECONDS)
+                .readTimeout(15, TimeUnit.SECONDS)
+                .writeTimeout(15, TimeUnit.SECONDS)
+                .build();
+
+        ClientHelper.setupOkHttpClient(client);
+
         JsonCake jsonCake = new JsonCake.Builder()
                 .urlStr("http://beibeilab.com/test/sample.json")
                 .build();

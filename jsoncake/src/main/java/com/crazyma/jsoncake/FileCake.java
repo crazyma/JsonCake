@@ -1,9 +1,6 @@
 package com.crazyma.jsoncake;
 
-import com.facebook.stetho.okhttp3.StethoInterceptor;
-
 import java.net.URL;
-import java.util.concurrent.TimeUnit;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -13,16 +10,17 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static com.crazyma.jsoncake.ClientHelper.okHttpClient;
+
 /**
  * Created by david on 2017/3/7.
  */
 
-public class FileCake {
+public class FileCake{
 
     public static final class Builder{
         private String urlStr;
         private URL url;
-        private int timeout = 15;
 
         public Builder urlStr(String urlStr) {
             this.urlStr = urlStr;
@@ -34,11 +32,6 @@ public class FileCake {
             return this;
         }
 
-        public Builder timeout(int timeout) {
-            this.timeout = timeout;
-            return this;
-        }
-
         public FileCake build(){
             return new FileCake(this);
         }
@@ -47,12 +40,10 @@ public class FileCake {
 
     private String urlStr;
     private URL url;
-    private int timeout;
 
     public FileCake(Builder builder){
         this.urlStr = builder.urlStr;
         this.url = builder.url;
-        this.timeout = builder.timeout;
     }
 
     public Flowable<Response> start(){
@@ -63,17 +54,17 @@ public class FileCake {
                 if(url == null){
                     if(urlStr == null) {
                         emitter.onError(new NullPointerException("url is Null"));
+                        return;
                     }else{
                         url = new URL(urlStr);
                     }
                 }
 
-                OkHttpClient client = new OkHttpClient.Builder()
-                        .addNetworkInterceptor(new StethoInterceptor())
-                        .connectTimeout(timeout, TimeUnit.SECONDS)
-                        .readTimeout(timeout, TimeUnit.SECONDS)
-                        .writeTimeout(timeout, TimeUnit.SECONDS)
-                        .build();
+                OkHttpClient client = okHttpClient;
+                if(client == null) {
+                    emitter.onError(new NullPointerException("OkHttpClient is Null"));
+                    return;
+                }
 
                 Request request = new Request.Builder()
                         .url(url)

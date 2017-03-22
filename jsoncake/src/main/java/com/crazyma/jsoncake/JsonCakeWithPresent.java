@@ -5,12 +5,9 @@ import android.os.Build;
 import android.util.ArrayMap;
 import android.util.Log;
 
-import com.facebook.stetho.okhttp3.StethoInterceptor;
-
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.concurrent.TimeUnit;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -26,6 +23,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static com.crazyma.jsoncake.ClientHelper.okHttpClient;
+
 /**
  * Created by david on 2016/2/19.
  */
@@ -37,7 +36,6 @@ public class JsonCakeWithPresent {
     public static final class Builder{
         private String urlStr;
         private URL url;
-        private int timeout = 15;
         private boolean showingJson;
         private RequestBody formBody;
         private ArrayMap<String,Object> present;
@@ -49,11 +47,6 @@ public class JsonCakeWithPresent {
 
         public Builder url(URL url){
             this.url = url;
-            return this;
-        }
-
-        public Builder timeout(int timeout) {
-            this.timeout = timeout;
             return this;
         }
 
@@ -79,7 +72,6 @@ public class JsonCakeWithPresent {
 
     private String urlStr;
     private URL url;
-    private int timeout = 15;
     private boolean showingJson;
     private RequestBody formBody;
     private ArrayMap<String,Object> present;
@@ -105,7 +97,6 @@ public class JsonCakeWithPresent {
     public JsonCakeWithPresent(JsonCakeWithPresent.Builder builder) {
         this.urlStr = builder.urlStr;   //  can not be null
         this.url = builder.url;
-        this.timeout = builder.timeout;
         this.showingJson = builder.showingJson;
         this.formBody = builder.formBody;   //  could be null. if exist -> Http Post; null -> Http Get
         this.present = builder.present; //  could be null.
@@ -121,17 +112,17 @@ public class JsonCakeWithPresent {
                 if(url == null){
                     if(urlStr == null) {
                         emitter.onError(new NullPointerException("url is Null"));
+                        return;
                     }else{
                         url = new URL(urlStr);
                     }
                 }
 
-                OkHttpClient client = new OkHttpClient.Builder()
-                        .addNetworkInterceptor(new StethoInterceptor())
-                        .connectTimeout(timeout, TimeUnit.SECONDS)
-                        .readTimeout(timeout,TimeUnit.SECONDS)
-                        .writeTimeout(timeout, TimeUnit.SECONDS)
-                        .build();
+                OkHttpClient client = okHttpClient;
+                if(client == null) {
+                    emitter.onError(new NullPointerException("OkHttpClient is Null"));
+                    return;
+                }
 
                 Request request;
                 if(formBody == null){
@@ -157,8 +148,11 @@ public class JsonCakeWithPresent {
                 String result;
                 try {
                     Response response = call.execute();
-                    if(!response.isSuccessful())
-                        emitter.onError( new IOException("Unexpected code " + response));
+                    if(!response.isSuccessful()) {
+                        emitter.onError(new IOException("Unexpected code " + response));
+                        response.close();
+                        return;
+                    }
 
                     result = response.body().string();
                 } catch (IOException e) {
@@ -197,17 +191,17 @@ public class JsonCakeWithPresent {
                 if(url == null){
                     if(urlStr == null) {
                         emitter.onError(new NullPointerException("url is Null"));
+                        return;
                     }else{
                         url = new URL(urlStr);
                     }
                 }
 
-                OkHttpClient client = new OkHttpClient.Builder()
-                        .addNetworkInterceptor(new StethoInterceptor())
-                        .connectTimeout(timeout, TimeUnit.SECONDS)
-                        .readTimeout(timeout,TimeUnit.SECONDS)
-                        .writeTimeout(timeout, TimeUnit.SECONDS)
-                        .build();
+                OkHttpClient client = okHttpClient;
+                if(client == null) {
+                    emitter.onError(new NullPointerException("OkHttpClient is Null"));
+                    return;
+                }
 
                 Request request;
                 if(formBody == null){
@@ -234,8 +228,11 @@ public class JsonCakeWithPresent {
                 Response response = null;
                 try {
                     response = call.execute();
-                    if(!response.isSuccessful())
-                        emitter.onError( new IOException("Unexpected code " + response));
+                    if(!response.isSuccessful()) {
+                        emitter.onError(new IOException("Unexpected code " + response));
+                        response.close();
+                        return;
+                    }
 
                     result = response.body().string();
                     response.close();
