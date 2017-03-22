@@ -231,13 +231,17 @@ public class JsonCakeWithPresent {
                 });
 
                 String result;
+                Response response = null;
                 try {
-                    Response response = call.execute();
+                    response = call.execute();
                     if(!response.isSuccessful())
                         emitter.onError( new IOException("Unexpected code " + response));
 
                     result = response.body().string();
+                    response.close();
                 } catch (IOException e) {
+                    if(response != null) response.close();
+
                     e.printStackTrace();
                     emitter.onError(e);
                     return;
