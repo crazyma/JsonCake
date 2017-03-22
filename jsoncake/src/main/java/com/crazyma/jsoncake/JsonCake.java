@@ -75,6 +75,7 @@ public class JsonCake {
     private int timeout = 15;
     private boolean showingJson;
     private RequestBody formBody;
+    private static OkHttpClient okHttpClient;
 
     public JsonCake(String urlStr){
         this.urlStr = urlStr;
@@ -102,6 +103,22 @@ public class JsonCake {
         this.formBody = builder.formBody;   //  could be null. if exist -> Http Post; null -> Http Get
     }
 
+    private OkHttpClient getOkHttpClient(){
+        if(okHttpClient == null){
+            synchronized (JsonCake.class) {
+                if(okHttpClient == null) {
+                    okHttpClient = new OkHttpClient.Builder()
+                            .addNetworkInterceptor(new StethoInterceptor())
+                            .connectTimeout(timeout, TimeUnit.SECONDS)
+                            .readTimeout(timeout, TimeUnit.SECONDS)
+                            .writeTimeout(timeout, TimeUnit.SECONDS)
+                            .build();
+                }
+            }
+        }
+        return okHttpClient;
+    }
+
     public Flowable<String> startWithFlowable(){
 
         return Flowable.create(new FlowableOnSubscribe<String>() {
@@ -116,12 +133,7 @@ public class JsonCake {
                     }
                 }
 
-                OkHttpClient client = new OkHttpClient.Builder()
-                        .addNetworkInterceptor(new StethoInterceptor())
-                        .connectTimeout(timeout, TimeUnit.SECONDS)
-                        .readTimeout(timeout, TimeUnit.SECONDS)
-                        .writeTimeout(timeout, TimeUnit.SECONDS)
-                        .build();
+                OkHttpClient client = getOkHttpClient();
 
                 Request request;
                 if (formBody == null) {
