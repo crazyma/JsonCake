@@ -6,15 +6,31 @@ Welcome to JsonCake
 
 
 
-Update - v2.2.0 [2016/12/21]
+Update - v2.4.0 [2017/03/22]
 ---
 導入 RxJava2。重新簡介目前功能
 - 使用 [RxJava2 (v2.0.2)](https://github.com/ReactiveX/RxJava/wiki/What's-different-in-2.0)
 - 使用 [Stetho (v1.3.1)](http://facebook.github.io/stetho/) 套件，可利用 Network Inspection 瀏覽 api call 的資訊
+- 共用 Golbal `OkHttpClient`
 
 
 HowTo
 ---
+1. 先自訂 Global 的 `OkHttpClient`。通常 app 只需要呼叫一次即可
+``` java
+//    This is sample of build a OkhttpClient.
+//    All these setting are optional.
+OkHttpClient client = new OkHttpClient.Builder()
+                            .addNetworkInterceptor(new StethoInterceptor())
+                            .connectTimeout(timeout, TimeUnit.SECONDS)
+                            .readTimeout(timeout, TimeUnit.SECONDS)
+                            .writeTimeout(timeout, TimeUnit.SECONDS)
+                            .build();
+
+ClientHelper.setupOkHttpClient(client);
+
+```
+2. 呼叫 `JsonCake`
 ``` java
 JsonCake jsonCake = new JsonCake.Builder()
                 .urlStr("YOUR_URL")
@@ -56,7 +72,6 @@ RequestBody requestBody = bodybuilder.build();
 JsonCake jsonCake = new JsonCake.Builder()
                 .urlStr("YOUR_URL")
                 .showingJson(true)    // true if you want to log the json string
-                .timeout(5) // set timeout (second)
                 .formBody(requestBody) // set form data if you want to do http-post
                 .build();
 ```
