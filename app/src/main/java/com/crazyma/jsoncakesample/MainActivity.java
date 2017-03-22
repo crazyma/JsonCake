@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        doNetworking();
     }
 
     private void doNetworking(){
@@ -113,7 +112,13 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    public void cancelButtonClick(View view) {
-
+    public void buttonClick(View view) {
+        switch (view.getId()){
+            case R.id.button_start:
+                doNetworking();
+                break;
+            case R.id.button_cancel:
+                break;
+        }
     }
 }
