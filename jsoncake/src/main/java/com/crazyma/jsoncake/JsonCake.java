@@ -132,9 +132,10 @@ public class JsonCake {
                     }
                 });
 
+                Response response = null;
                 String result;
                 try {
-                    Response response = call.execute();
+                    response = call.execute();
                     if (!response.isSuccessful()) {
                         emitter.onError(new IOException("Unexpected code " + response));
                         response.close();
@@ -142,8 +143,11 @@ public class JsonCake {
                     }
 
                     result = response.body().string();
+                    response.close();
                 } catch (IOException e) {
                     e.printStackTrace();
+
+                    if(response != null) response.close();
                     emitter.onError(e);
                     return;
                 }
@@ -215,9 +219,9 @@ public class JsonCake {
                     result = response.body().string();
                     response.close();
                 } catch (IOException e) {
-                    if(response != null) response.close();
-
                     e.printStackTrace();
+
+                    if(response != null) response.close();
                     emitter.onError(e);
                     return;
                 }

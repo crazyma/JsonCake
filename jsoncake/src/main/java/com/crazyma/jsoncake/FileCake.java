@@ -74,9 +74,12 @@ public class FileCake{
 
                 if(response != null && response.isSuccessful()) {
                     emitter.onNext(response);
+                    emitter.onComplete();
                 }else{
                     emitter.onError(new RuntimeException(
                             response == null ? "response is null" : response.message()));
+                    if(response != null)
+                        response.close();
                 }
 
             }
