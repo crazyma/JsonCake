@@ -76,10 +76,10 @@ public class FileCake{
                     emitter.onNext(response);
                     emitter.onComplete();
                 }else{
-                    emitter.onError(new RuntimeException(
-                            response == null ? "response is null" : response.message()));
-                    if(response != null)
-                        response.close();
+                    String errorMessage = response == null ? "response is null" : response.message();
+                    response.close();
+
+                    emitter.onError(new RuntimeException(errorMessage));
                 }
 
             }
